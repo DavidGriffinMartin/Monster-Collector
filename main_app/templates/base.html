@@ -34,6 +34,8 @@
             {% if user.is_authenticated %}
             <li><a href="{% url 'index' %}">View All Monsters</a></li>
             <li><a href="{% url 'monsters_create' %}">Add a Monster</a></li>
+            <li><a href="{% url 'skills_index' %}">View All Skills</a></li>
+            <li><a href="{% url 'skills_create' %}">Add a Skill</a></li>
             <li><a href="{% url 'logout' %}">Log Out</a></li>
             {% else %}
             <li><a href="{% url 'login' %}">Log In</a></li>

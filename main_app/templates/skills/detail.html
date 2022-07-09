@@ -1,0 +1,18 @@
+{% extends 'base.html' %} {% block content %}
+
+<h1>Skill Details</h1>
+<hr />
+
+<div class="card">
+  <a href="{% url 'skills_detail' skill.id %}">
+    <div class="card-content">
+      <span class="card-title">{{skill.name}}</span>
+    </div>
+    <div class="card-action">
+      <a href="{% url 'skills_update' skill.id %}">Edit</a>
+      <a href="{% url 'skills_delete' skill.id %}">Delete</a>
+    </div>
+  </a>
+</div>
+
+{% endblock %}

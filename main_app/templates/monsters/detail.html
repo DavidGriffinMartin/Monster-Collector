@@ -16,13 +16,28 @@
         <a href="{% url 'monsters_update' monster.id %}">Edit</a>
         <a href="{% url 'monsters_delete' monster.id %}">Delete</a>
       </div>
-      <div class="card-action"></div>
     </div>
+    {% for photo in monster.photo_set.all %}
+    <img class="responsive-img card-panel" src="{{photo.url}}" />
+    {% empty %}
+    <div class="card-panel teal-text center-align">No Photos Uploaded</div>
+    {% endfor %}
+    <form
+      action="{% url 'add_photo' monster.id %}"
+      enctype="multipart/form-data"
+      method="POST"
+      class="card-panel"
+    >
+      {% csrf_token %}
+      <input type="file" name="photo-file" />
+      <br /><br />
+      <input type="submit" class="btn purple" value="Upload Photo" />
+    </form>
   </div>
   <div class="col s6">
     <form action="{% url 'add_feeding' monster.id %}" method="post">
       {% csrf_token %} {{ feeding_form.as_p }}
-      <input type="submit" class="btn black" value="Add Feeding" />
+      <input type="submit" class="btn purple" value="Add Feeding" />
     </form>
     <br />
     {% if monster.fed_for_today %}
@@ -59,9 +74,7 @@
     {% if monster.skills.count %} {% for skill in monster.skills.all %}
     <div class="card">
       <div class="card-content">
-        <span class="card-title">
-          {{ skill.name }}
-        </span>
+        <span class="card-title"> {{ skill.name }} </span>
       </div>
     </div>
     {% endfor %} {% else %}
@@ -73,14 +86,15 @@
     {% if skills.count %} {% for skill in skills.all %}
     <div class="card">
       <div class="card-content">
-        <span class="card-title">
-          {{ skill.name }}
-        </span>
+        <span class="card-title"> {{ skill.name }} </span>
       </div>
       <div class="card-action">
-        <form action="{% url 'assoc_skill' monster.id skill.id %}" method="post">
+        <form
+          action="{% url 'assoc_skill' monster.id skill.id %}"
+          method="post"
+        >
           {% csrf_token %}
-          <button type="submit" class="btn red">Add</button>
+          <button type="submit" class="btn purple">Add</button>
         </form>
       </div>
     </div>
@@ -101,7 +115,6 @@
     var selectEl = document.getElementById("id_meal");
     M.FormSelect.init(selectEl);
   </script>
-
 </div>
 
 {% endblock %}

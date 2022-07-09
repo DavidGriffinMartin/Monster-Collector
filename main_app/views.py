@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Monster
+from .forms import FeedingForm
 
 
 def home(request):
@@ -25,10 +26,17 @@ def monsters_index(request):
 
 def monsters_detail(request, monster_id):
     monster = Monster.objects.get(id=monster_id)
-    return render(request, 'monsters/detail.html', {'monster': monster})
+    feeding_form = FeedingForm()
+    return render(request, 'monsters/detail.html', {'monster': monster, 'feeding_form': feeding_form})
 
 
-
+def add_feeding(request, monster_id):
+    form = FeedingForm(request.POST)
+    if form.is_valid():
+        new_feeding = form.save(commit=False)
+        new_feeding.monster_id = monster_id
+        new_feeding.save()
+    return redirect('detail', monster_id=monster_id)
 
 
 def signup(request):

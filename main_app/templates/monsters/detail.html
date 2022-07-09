@@ -16,7 +16,56 @@
         <a href="{% url 'monsters_update' monster.id %}">Edit</a>
         <a href="{% url 'monsters_delete' monster.id %}">Delete</a>
       </div>
-      <div class="card-action">{% endblock %}</div>
+      <div class="card-action"></div>
     </div>
   </div>
+  <div class="col s6">
+    <form action="{% url 'add_feeding' monster.id %}" method="post">
+      {% csrf_token %} {{ feeding_form.as_p }}
+      <input type="submit" class="btn black" value="Add Feeding" />
+    </form>
+    <br />
+    {% if monster.fed_for_today %}
+    <div class="card-panel teal-text center-align">
+      {{monster.name}} has been fed all meals for today.
+    </div>
+    {% else %}
+    <div class="card-panel red-text center-align">
+      {{monster.name}} might be hungry
+    </div>
+    {% endif %}
+    <table class="striped">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Meal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for feeding in monster.feeding_set.all %}
+        <tr>
+          <td>{{feeding.date}}</td>
+          <td>{{feeding.get_meal_display}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
+<hr />
+  <script>
+    var dateEl = document.getElementById("id_date");
+    M.Datepicker.init(dateEl, {
+      format: "yyyy-mm-dd",
+      defaultDate: new Date(),
+      setDefaultDate: true,
+      autoClose: true,
+    });
+
+    var selectEl = document.getElementById("id_meal");
+    M.FormSelect.init(selectEl);
+  </script>
+
+</div>
+
+{% endblock %}

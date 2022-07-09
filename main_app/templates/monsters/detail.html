@@ -1,6 +1,6 @@
 {% extends 'base.html' %} {% block content %}
 
-<h1>Cat Details</h1>
+<h1>Monster Details</h1>
 <hr />
 
 <div class="row">
@@ -11,6 +11,10 @@
         <p>Breed: {{ monster.breed }}</p>
         <p>Description: {{ monster.description }}</p>
         <p>Age: {{ monster.age }}</p>
+      </div>
+      <div class="card-action">
+        <a href="{% url 'monsters_update' monster.id %}">Edit</a>
+        <a href="{% url 'monsters_delete' monster.id %}">Delete</a>
       </div>
       <div class="card-action">{% endblock %}</div>
     </div>

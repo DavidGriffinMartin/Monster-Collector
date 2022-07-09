@@ -11,12 +11,22 @@ MEALS = (
 )
 
 
+class Skill(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f'{self.name}'
+
+    def get_absolute_url(self):
+        return reverse('skills_detail', kwargs={'pk': self.id})
+
+
 class Monster(models.Model):
     name = models.CharField(max_length=100)
     type = models.CharField(max_length=100)
     description = models.TextField(max_length=250)
     age = models.IntegerField()
-    # skills = models.ManyToManyField(Skill)
+    skills = models.ManyToManyField(Skill)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def fed_for_today(self):
@@ -27,8 +37,8 @@ class Monster(models.Model):
 
     def get_absolute_url(self):
         return reverse('detail', kwargs={'monster_id': self.id})
-      
-      
+
+
 class Feeding(models.Model):
     date = models.DateField('feeding date')
     meal = models.CharField(

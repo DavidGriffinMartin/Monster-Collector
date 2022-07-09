@@ -3,4 +3,17 @@
 <h1>Monster List</h1>
 <hr />
 
+{% for monster in monsters %}
+<div class="card">
+  <a href="{% url 'detail' monster.id %}">
+    <div class="card-content">
+      <span class="card-title">{{ monster.name }}</span>
+      <p>Type: {{ monster.type }}</p>
+      <p>Description: {{ monster.description }}</p>
+      <p>Age: {{ monster.age }}</p>
+    </div>
+  </a>
+</div>
+{% endfor %}
+
 {% endblock %}

@@ -8,7 +8,7 @@
     <div class="card">
       <div class="card-content">
         <span class="card-title">{{ monster.name }}</span>
-        <p>Breed: {{ monster.breed }}</p>
+        <p>Type: {{ monster.type }}</p>
         <p>Description: {{ monster.description }}</p>
         <p>Age: {{ monster.age }}</p>
       </div>
@@ -53,6 +53,42 @@
   </div>
 </div>
 <hr />
+<div class="row">
+  <div class="col s6">
+    <h3>{{ monster.name }}'s Skills</h3>
+    {% if monster.skills.count %} {% for skill in monster.skills.all %}
+    <div class="card">
+      <div class="card-content">
+        <span class="card-title">
+          {{ skill.name }}
+        </span>
+      </div>
+    </div>
+    {% endfor %} {% else %}
+    <h5>No Skills</h5>
+    {% endif %}
+  </div>
+  <div class="col s6">
+    <h3>Available Skills</h3>
+    {% if skills.count %} {% for skill in skills.all %}
+    <div class="card">
+      <div class="card-content">
+        <span class="card-title">
+          {{ skill.name }}
+        </span>
+      </div>
+      <div class="card-action">
+        <form action="{% url 'assoc_skill' monster.id skill.id %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn red">Add</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %} {% else %}
+    <h5>{{monster.name}} Has All Skills Available</h5>
+    {% endif %}
+  </div>
+
   <script>
     var dateEl = document.getElementById("id_date");
     M.Datepicker.init(dateEl, {

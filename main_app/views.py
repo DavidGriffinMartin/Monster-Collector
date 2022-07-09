@@ -7,8 +7,15 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .models import Monster, Skill
+from .models import Monster, Skill, Photo
 from .forms import FeedingForm
+
+import uuid
+import boto3
+
+
+S3_BASE_URL = 'https://s3.us-east-1.amazonaws.com/'
+BUCKET = 'catcollector-avatar-13'
 
 
 def home(request):
@@ -19,11 +26,13 @@ def about(request):
     return render(request, 'about.html')
 
 
+@login_required
 def monsters_index(request):
     monsters = Monster.objects.all()
     return render(request, 'monsters/index.html', {'monsters': monsters})
 
 
+@login_required
 def monsters_detail(request, monster_id):
     monster = Monster.objects.get(id=monster_id)
     feeding_form = FeedingForm()
@@ -32,6 +41,7 @@ def monsters_detail(request, monster_id):
     return render(request, 'monsters/detail.html', {'monster': monster, 'feeding_form': feeding_form, 'skills': skills_monster_doesnt_have})
 
 
+@login_required
 def add_feeding(request, monster_id):
     form = FeedingForm(request.POST)
     if form.is_valid():
@@ -41,8 +51,26 @@ def add_feeding(request, monster_id):
     return redirect('detail', monster_id=monster_id)
 
 
+@login_required
 def assoc_skill(request, monster_id, skill_id):
     Monster.objects.get(id=monster_id).skills.add(skill_id)
+    return redirect('detail', monster_id=monster_id)
+
+
+@login_required
+def add_photo(request, monster_id):
+    photo_file = request.FILES.get('photo-file', None)
+    if photo_file:
+        s3 = boto3.client('s3')
+        key = uuid.uuid4().hex[:6] + \
+            photo_file.name[photo_file.name.rfind('.'):]
+        try:
+            s3.upload_fileobj(photo_file, BUCKET, key)
+            url = f"{S3_BASE_URL}{BUCKET}/{key}"
+            photo = Photo(url=url, monster_id=monster_id)
+            photo.save()
+        except:
+            print('An error occurred uploading file to S3')
     return redirect('detail', monster_id=monster_id)
 
 

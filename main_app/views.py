@@ -7,7 +7,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .models import Monster
+from .models import Monster, Skill
 from .forms import FeedingForm
 
 
@@ -21,13 +21,15 @@ def about(request):
 
 def monsters_index(request):
     monsters = Monster.objects.all()
-    return render(request, 'monsters/index.html', { 'monsters': monsters})
+    return render(request, 'monsters/index.html', {'monsters': monsters})
 
 
 def monsters_detail(request, monster_id):
     monster = Monster.objects.get(id=monster_id)
     feeding_form = FeedingForm()
-    return render(request, 'monsters/detail.html', {'monster': monster, 'feeding_form': feeding_form})
+    skills_monster_doesnt_have = Skill.objects.exclude(
+        id__in=monster.skills.all().values_list('id'))
+    return render(request, 'monsters/detail.html', {'monster': monster, 'feeding_form': feeding_form, 'skills': skills_monster_doesnt_have})
 
 
 def add_feeding(request, monster_id):
@@ -36,6 +38,11 @@ def add_feeding(request, monster_id):
         new_feeding = form.save(commit=False)
         new_feeding.monster_id = monster_id
         new_feeding.save()
+    return redirect('detail', monster_id=monster_id)
+
+
+def assoc_skill(request, monster_id, skill_id):
+    Monster.objects.get(id=monster_id).skills.add(skill_id)
     return redirect('detail', monster_id=monster_id)
 
 
@@ -62,8 +69,8 @@ class MonsterCreate(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super().form_valid(form)
-      
-      
+
+
 class MonsterUpdate(LoginRequiredMixin, UpdateView):
     model = Monster
     fields = ['type', 'description', 'age']
@@ -72,3 +79,28 @@ class MonsterUpdate(LoginRequiredMixin, UpdateView):
 class MonsterDelete(LoginRequiredMixin, DeleteView):
     model = Monster
     success_url = '/monsters/'
+
+
+class SkillList(LoginRequiredMixin, ListView):
+    model = Skill
+    template_name = 'skills/index.html'
+
+
+class SkillDetail(LoginRequiredMixin, DetailView):
+    model = Skill
+    template_name = 'skills/detail.html'
+
+
+class SkillCreate(LoginRequiredMixin, CreateView):
+    model = Skill
+    fields = ['name']
+
+
+class SkillUpdate(LoginRequiredMixin, UpdateView):
+    model = Skill
+    fields = ['name']
+
+
+class SkillDelete(LoginRequiredMixin, DeleteView):
+    model = Skill
+    success_url = '/skills/'
